@@ -15,12 +15,9 @@ namespace LinedRichTextBox
     public partial class LinedRichTextBox : UserControl
     {
         #region Variables
-        //Settings for the control----
+        //Settings for the control
         private Font _Font = UserControl.DefaultFont;
-        //-----
 
-        //Holds the current lineNumber
-        private int intCurrLineNum;
         //Holds whether text has been changed
         private bool isChanged = false;
         //Holds wether softWrap is on or off
@@ -31,7 +28,7 @@ namespace LinedRichTextBox
         private string strLine;
         //Holds the width of the string
         private int stringWidth;
-        //Holds the lineCount for rtbLinedBox
+        //Holds the current LineNum for rtbLinedBox
         private int intLineNum;
 
         #endregion
@@ -53,19 +50,19 @@ namespace LinedRichTextBox
         private void rtbLinedBox_KeyDown(object sender, KeyEventArgs e)
         {
             //Code may be useless----------------------------------------
-            //Set lineNum variable to equal the rtbLinedBox line count + 1
-            intCurrLineNum = rtbLinedBox.Lines.Count() + 1;
+            //Set lineNum variable to equal the rtbLinedBox line count
+            intLineNum = rtbLinedBox.Lines.Count();
 
             //Check if keycode is Enter
             if (e.KeyCode == Keys.Enter)
             {
-                isChanged = true;
+                IncreaseLineNum(intLineNum);
             }//End KeyCode.Enter
 
             //Check if keycode is Back
             if (e.KeyCode == Keys.Back)
             {
-                isChanged = true;
+                DecreaseLineNum(intLineNum);
                 rtbLinedBox.ScrollToCaret();
             }//End KeyCode.Back
 
@@ -152,16 +149,19 @@ namespace LinedRichTextBox
         //TextChanged Event for rtbLinedBox
         private void rtbLinedBox_TextChanged(object sender, EventArgs e)
         {
-            //RedrawLines();
-            //********************MAY NOT NEED******************************
-            if (isChanged == true)
+            //Check if isChanged is true
+            if (isChanged)
             {
+                //Call RedrawLines
                 RedrawLines();
+                //Call SynchScroll
                 SyncScroll();
+                //Set isChanged to false
                 isChanged = false;
             }
             else
             {
+                //Return
                 return;
             }
         }
@@ -306,21 +306,78 @@ namespace LinedRichTextBox
         #endregion
 
         #region Add and Remove Lines
-        
-        //Method to add lines 
+
+        //Used to call the Adding method
+        public void IncreaseLineNum(int num)
+        {
+            //Check if the selection start is at 0
+            if (rtbLinedBox.SelectionStart == 0)
+            {
+                //Call GetStringWidth
+                GetStringWidth(num);
+                //If it does call Adding(num + 2)
+                Adding(num + 2);
+            }
+            else
+            {
+                //Call GetStringWidth and give it the last line 
+                //Which is num - 1
+                GetStringWidth(num - 1);
+                //Else give Adding(num+1)
+                Adding(num + 1);
+            }
+        }//End IncreaseLineNum
+
+        //Used to call Removing method
+        public void DecreaseLineNum(int num)
+        {
+            //Check to see if there is text selected
+            if (rtbLinedBox.SelectionLength > 0)
+            {
+                //If so redraw the lines
+                isChanged = true;
+                return;
+            }
+            else
+            {
+                //Check if selection start == 0
+                if (rtbLinedBox.SelectionStart == 0)
+                {
+                    //return
+                    return;
+                }
+                //Check if a line string is empty
+                if (rtbLinedBox.Lines[num - 1].ToString() == "")
+                {
+                    //call the removing method
+                    Removing(num);
+                }
+                else
+                {
+                    //return
+                    return;
+                }
+
+            }
+        }//End DecreaseLineNum
+
+        #region Adding or Removing Line Numbers
+        //Method to add lines to the string array rtbLineNums
         private void Adding(int num)
         {
             //Pre: Needs the variable num to be initialized.
-            //Purpose: To Add line numbers or spaces depending whether softWrap is on or not.
+            //Purpose: To Add line numbers or spaces depending whether softWrap is on or not
+            //to the line numbers text box.
             //Pose: Add the line numbers or spaces in the rtbLineNums box.
 
-            //grab string array from the rtbLineNums.lines
+            //Create a string array and set it to rtbLineNums.lines
             string[] lineArr = rtbLineNums.Lines;
             //turn the array into a list
             var lineColl = new List<string>(lineArr);
-            //Adds spaces if the SoftWrap is true to the line numbers-------------------------
+            //Check if softwrap is enabled
             if(softWrap == true)
             {
+                //Adds spaces if the SoftWrap is true to the line numbers------------
                 //Check that the string width is bigger or equal to the control width
                 if (stringWidth >= rtbLinedBox.Width)
                 {
@@ -333,50 +390,80 @@ namespace LinedRichTextBox
                         lineColl.Add(" ");
                     }
                 }
-            }
+            }//End If(softwrap == true)
             //--------------------------------------------------------------------------------
             //add a new line to the list
             lineColl.Add((num).ToString());
             //convert back to an array
             lineArr = lineColl.ToArray();
-            //set the array to the rtbLineNums.lines
+            //set the array to the rtbLineNums.lines where the line numbers are stored
             rtbLineNums.Lines = lineArr;
-        }
+            LoadDefaults();
+        }//End Adding()
+
+        //Method to remove lines from the string array rtbLineNums
+        private void Removing(int num)
+        {
+            //Pre: Needs the variable num to be initialized.
+            //Purpose: To Add line numbers or spaces depending whether softWrap is on or not
+            //to the line numbers text box.
+            //Pose: Add the line numbers or spaces in the rtbLineNums box.
+
+            //Create a string array and set it to rtbLineNums.lines
+            string[] lineArr = rtbLineNums.Lines;
+            //turn the array into a list
+            var lineColl = new List<string>(lineArr);
+            //Check if softwrap is enabled
+            if (softWrap == true)
+            {
+                for (int i = 0; i < lineColl.Count(); i++)
+                {
+                    lineColl.Remove(" ");
+                }
+            }//End If(softwrap == true)
+            //--------------------------------------------------------------------------------
+            //add a new line to the list
+            lineColl.Remove((num).ToString());
+            //convert back to an array
+            lineArr = lineColl.ToArray();
+            //set the array to the rtbLineNums.lines where the line numbers are stored
+            rtbLineNums.Lines = lineArr;
+            LoadDefaults();
+        }//End Removing()
+        #endregion
 
         //Use this to redraw the rtbLineNum box using the rtbLinedBox line count
         public void RedrawLines()
         {
             //Pre: Does not need any incoming variables.
-            //Purpose: To redraw the lines in the rtbLineNums box.
+            //Purpose: To redraw the lines in the rtbLineNums box where the line numbers are stored.
             //Post: Redraw the lineNumbers on the rtbLineNums box according to the
             //Amount of lines in the rtbLinedBox and whether the softwrap is on.
 
-            if (softWrap == true)
+            //Clear the rtbLineNums box
+            rtbLineNums.Clear();
+            //Set the text to have "1" 
+            rtbLineNums.Text += 1;
+
+            for (int i = 0; i < (rtbLinedBox.Lines.Count() - 1); i++)
             {
-                rtbLineNums.Clear();
-                rtbLineNums.Text += 1;
-
-                for (int i = 0; i < (rtbLinedBox.Lines.Count() - 1); i++)
-                {
-                    GetStringWidth(i);
-
-                    Adding(i + 2);
-                }
+                //Get the string width
+                GetStringWidth(i);
+                //Call adding method
+                Adding(i + 2);
             }
-            else
-            {
-                rtbLineNums.Clear();
-                rtbLineNums.Text += 1;
-
-                for (int i = 0; i < (rtbLinedBox.Lines.Count() - 1); i++)
-                {
-                    Adding(i + 2);
-                }
-            }
-            rtbLineNums.SelectAll();
-            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
+            LoadDefaults();
         }//End RedrawLines
 
+        //Holds the default values for the Control
+        public void LoadDefaults()
+        {
+            //Load Default Values
+            rtbLinedBox.SelectionIndent = 10;
+            //Set the alignment of the rtbLineNums rich text box
+            rtbLineNums.SelectAll();
+            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
+        }
         #endregion
 
         #region Drag And Drop Public method
