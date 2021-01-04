@@ -46,3 +46,11 @@ D:\Programming\Current Projects Not Online\LinedRichTextBox\LinedRichTextBox\obj
 D:\Programming\Current Projects Not Online\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
 D:\Programming\Current Projects Not Online\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
 D:\Programming\Current Projects Not Online\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.pdb
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csprojAssemblyReference.cache
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.LinedRichTextBox.resources
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.GenerateResource.cache
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
+D:\Github\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb

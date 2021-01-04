@@ -20,8 +20,12 @@ namespace LinedRichTextBox
 
         //Holds whether text has been changed
         private bool isChanged = false;
-        //Holds wether softWrap is on or off
+        //Holds wether softWrap is on or off set to rtbLinedBox.WordWrap value
         private static bool softWrap;
+        //Holds wether autoBrackets is on or off default off
+        private static bool autoBrackets = true;
+        //Holds the rtbLinedBox indentation
+        private static int indentation = 10;
 
         //Variables to calculate Softwrap
         //Holds the string line
@@ -93,46 +97,52 @@ namespace LinedRichTextBox
             //Auto complete brackets
             String s = e.KeyChar.ToString();
             int sel = rtbLinedBox.SelectionStart;
-
-            switch (s)
+            //Check if the autoBrackets feature is enabled
+            if(autoBrackets == true)
             {
-                case "(":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "()");
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + 1;
-                    break;
+                //Switch statement to check brackets that are entered by user
+                switch (s)
+                {
+                    
+                    case "(":
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "()");
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + 1;
+                        break;
 
-                case "{":
-                    String t = "{}";
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, t);
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + t.Length - 1;
-                    break;
+                    case "{":
+                        String t = "{}";
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, t);
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + t.Length - 1;
+                        break;
 
-                case "[":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "[]");
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + 1;
-                    break;
+                    case "[":
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "[]");
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + 1;
+                        break;
 
-                case "\"":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"\"");
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + 1;
-                    break;
+                    case "\"":
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"\"");
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + 1;
+                        break;
 
-                case "'":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "''");
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + 1;
-                    break;
+                    case "'":
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "''");
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + 1;
+                        break;
 
-                case "<":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "<>");
-                    e.Handled = true;
-                    rtbLinedBox.SelectionStart = sel + 1;
-                    break;
-            }
+                    case "<":
+                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "<>");
+                        e.Handled = true;
+                        rtbLinedBox.SelectionStart = sel + 1;
+                        break;
+                }//End Switch statement
+            }//End If statement
+            
         }
         #endregion
 
@@ -169,6 +179,7 @@ namespace LinedRichTextBox
 
         #region MouseEvents
         //MouseClick Event for rtbLineNums
+        //In progress to highlight row when line num is clicked
         private void rtbLineNums_MouseClick(object sender, MouseEventArgs e)
         {
             //int firstcharindex = rtbLineNums.GetFirstCharIndexOfCurrentLine();
@@ -205,48 +216,55 @@ namespace LinedRichTextBox
         //Indentation on the Main rich text box rtbLinedBox
         public int Indentation
         {
-            get { return rtbLinedBox.SelectionIndent; }
-            set { rtbLinedBox.SelectionIndent = value; }
+            get { return indentation; }
+            set { rtbLinedBox.SelectionIndent = indentation = value; }
         }
 
         //rtbLineNums rich text box settings
+        //rtbLineNums ForeColor
         public Color LineNumForeColor
         {
             get { return rtbLineNums.ForeColor; }
             set { rtbLineNums.ForeColor = value; }
         }
-
+        //rtbLineNums BackColor
         public Color LineNumBackColor
         {
             get { return rtbLineNums.BackColor; }
             set { rtbLineNums.BackColor = value; }
         }
-
         //rtbLinedBox rich text box settings
+        //ForeColor
         public Color MainForeColor
         {
             get { return rtbLinedBox.ForeColor; }
             set { rtbLinedBox.ForeColor = value; }
         }
-
+        //BackColor
         public Color MainBackColor
         {
             get { return rtbLinedBox.BackColor; }
             set { rtbLinedBox.BackColor = value; }
         }
-
+        //Gets wether lineNumers is visible or not
         public bool LineNumbers
         {
             get { return rtbLineNums.Visible; }
             set { rtbLineNums.Visible = value; }
         }
-
+        //returns wether softwrap is on or off
         public bool SoftWrap
         {
             get { return softWrap; }
             set { softWrap = rtbLinedBox.WordWrap = value; }
         }
-
+        //Gets wether auto brackets is on or off
+        public bool AutoBrackets
+        {
+            get { return autoBrackets; }
+            set { autoBrackets = value; }
+        }
+       
         #endregion
 
         #region Methods
@@ -459,7 +477,7 @@ namespace LinedRichTextBox
         public void LoadDefaults()
         {
             //Load Default Values
-            rtbLinedBox.SelectionIndent = 10;
+            rtbLinedBox.SelectionIndent = indentation;
             //Set the alignment of the rtbLineNums rich text box
             rtbLineNums.SelectAll();
             rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
