@@ -397,10 +397,10 @@ namespace LinedRichTextBox
             {
                 //Adds spaces if the SoftWrap is true to the line numbers------------
                 //Check that the string width is bigger or equal to the control width
-                if (stringWidth >= rtbLinedBox.Width)
+                if (stringWidth + 7 >= rtbLinedBox.Width)
                 {
                     //While integer StringWidth is greater or equal to the width of the richtextbox
-                    while (stringWidth >= rtbLinedBox.Width || stringWidth > (rtbLinedBox.Width - Indentation))
+                    while (stringWidth + 7 >= rtbLinedBox.Width || stringWidth >= (rtbLinedBox.Width - indentation))
                     {
                         //Change the integer stringWidth to equal itself minus width of the rtbLinedBox
                         stringWidth = (stringWidth + Indentation) - rtbLinedBox.Width;
@@ -434,7 +434,7 @@ namespace LinedRichTextBox
             //Check if softwrap is enabled
             if (softWrap == true)
             {
-                for (int i = 0; i < lineColl.Count(); i++)
+                for (int i = 0; i < lineArr.Count(); i++)
                 {
                     lineColl.Remove(" ");
                 }
