@@ -293,7 +293,7 @@ namespace LinedRichTextBox
             //Call the GetString function and send it the num integer
             GetString(num);
             //Set the string width (TextRenderer.MeasureText(Send it string line, rtbLinedBox.Font property).Get the Width)
-            stringWidth = (TextRenderer.MeasureText(strLine, rtbLinedBox.Font).Width);
+            stringWidth = TextRenderer.MeasureText(strLine, rtbLinedBox.Font).Width;
         }
         #endregion
 
@@ -325,6 +325,7 @@ namespace LinedRichTextBox
 
         #region Add and Remove Lines
 
+        #region Increase / Decrease
         //Used to call the Adding method
         public void IncreaseLineNum(int num)
         {
@@ -378,6 +379,7 @@ namespace LinedRichTextBox
 
             }
         }//End DecreaseLineNum
+        #endregion
 
         #region Adding or Removing Line Numbers
         //Method to add lines to the string array rtbLineNums
@@ -397,10 +399,11 @@ namespace LinedRichTextBox
             {
                 //Adds spaces if the SoftWrap is true to the line numbers------------
                 //Check that the string width is bigger or equal to the control width
-                if (stringWidth + 7 >= rtbLinedBox.Width)
+                if (stringWidth + 8 > rtbLinedBox.Width)
                 {
+                    
                     //While integer StringWidth is greater or equal to the width of the richtextbox
-                    while (stringWidth + 7 >= rtbLinedBox.Width || stringWidth >= (rtbLinedBox.Width - indentation))
+                    while (stringWidth + 8 > rtbLinedBox.Width)
                     {
                         //Change the integer stringWidth to equal itself minus width of the rtbLinedBox
                         stringWidth = (stringWidth + Indentation) - rtbLinedBox.Width;
