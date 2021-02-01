@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LinedRichTextBox
 {
@@ -358,6 +352,7 @@ namespace LinedRichTextBox
         //Used to call Removing method
         public void DecreaseLineNum(int num)
         {
+            int carretPos = rtbLinedBox.SelectionStart;
             //Check to see if there is text selected
             if (rtbLinedBox.SelectionLength > 0)
             {
@@ -374,7 +369,7 @@ namespace LinedRichTextBox
                     return;
                 }
                 //Check if a line string is empty
-                if (rtbLinedBox.Lines[num - 1].ToString() == "")
+                if (rtbLinedBox.Lines[num - 1].ToString() == "" || rtbLinedBox.Text[carretPos - 1] == '\n')
                 {
                     //call the removing method
                     Removing(num);
