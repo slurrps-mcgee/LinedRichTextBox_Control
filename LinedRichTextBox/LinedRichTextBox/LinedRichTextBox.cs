@@ -94,54 +94,62 @@ namespace LinedRichTextBox
         //Coding Options down below matching symbols generic library
         private void rtbLinedBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //Auto complete brackets
-            String s = e.KeyChar.ToString();
-            int sel = rtbLinedBox.SelectionStart;
-            //Check if the autoBrackets feature is enabled
-            if(autoBrackets == true)
+            try
             {
-                //Switch statement to check brackets that are entered by user
-                switch (s)
+                //Auto complete brackets
+                String s = e.KeyChar.ToString();
+                int sel = rtbLinedBox.SelectionStart;
+                //Check if the autoBrackets feature is enabled
+                if (autoBrackets == true)
                 {
-                    
-                    case "(":
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "()");
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + 1;
-                        break;
+                    //Switch statement to check brackets that are entered by user
+                    switch (s)
+                    {
 
-                    case "{":
-                        String t = "{}";
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, t);
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + t.Length - 1;
-                        break;
+                        case "(":
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "()");
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + 1;
+                            break;
 
-                    case "[":
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "[]");
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + 1;
-                        break;
+                        case "{":
+                            String t = "{}";
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, t);
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + t.Length - 1;
+                            break;
 
-                    case "\"":
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"\"");
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + 1;
-                        break;
+                        case "[":
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "[]");
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + 1;
+                            break;
 
-                    case "'":
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "''");
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + 1;
-                        break;
+                        case "\"":
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"\"");
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + 1;
+                            break;
 
-                    case "<":
-                        rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "<>");
-                        e.Handled = true;
-                        rtbLinedBox.SelectionStart = sel + 1;
-                        break;
-                }//End Switch statement
-            }//End If statement
+                        case "'":
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "''");
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + 1;
+                            break;
+
+                        case "<":
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "<>");
+                            e.Handled = true;
+                            rtbLinedBox.SelectionStart = sel + 1;
+                            break;
+                    }//End Switch statement
+                }//End If statement
+            }
+            catch
+            {
+
+            }
+            
             
         }
         #endregion
