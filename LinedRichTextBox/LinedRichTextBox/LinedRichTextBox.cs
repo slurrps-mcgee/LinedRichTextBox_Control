@@ -525,5 +525,34 @@ namespace LinedRichTextBox
 
         #endregion
 
+        //public void AutoTab(int num)
+        //{
+        //    int tabCount = 0;
+        //    strLine = rtbLinedBox.Lines[num];
+        //    foreach(char c in strLine)
+        //    {
+        //        if(c == '\t')
+        //        {
+        //            tabCount++;
+        //        }
+        //    }
+
+        //    if(strLine.Contains(">"))
+        //    {
+        //        if(tabCount == 0)
+        //        {
+        //            rtbLinedBox.Lines[num + 1].Append('\t');
+        //            strLine.Append('\t');
+        //        }
+        //        while(tabCount != 0)
+        //        {
+        //            strLine.Append('\t');
+        //            tabCount--;
+        //        }
+        //    }
+
+
+        //}
+
     }
 }
