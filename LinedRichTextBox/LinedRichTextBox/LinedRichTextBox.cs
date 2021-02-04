@@ -45,7 +45,7 @@ namespace LinedRichTextBox
 
         #region KeyDown
         //KeyDown Event for rtbLinedBox
-        private void rtbLinedBox_KeyDown(object sender, KeyEventArgs e)
+        private void RtbLinedBox_KeyDown(object sender, KeyEventArgs e)
         {
             //Code may be useless----------------------------------------
             //Set lineNum variable to equal the rtbLinedBox line count
@@ -86,7 +86,7 @@ namespace LinedRichTextBox
 
         #region KeyPress
         //Coding Options down below matching symbols generic library
-        private void rtbLinedBox_KeyPress(object sender, KeyPressEventArgs e)
+        private void RtbLinedBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace LinedRichTextBox
 
         #region Scrolling
         //VScroll Event for rtbLinedBox
-        private void rtbLinedBox_VScroll(object sender, EventArgs e)
+        private void RtbLinedBox_VScroll(object sender, EventArgs e)
         {
             //Call SyncScroll()
             SyncScroll();
@@ -159,7 +159,7 @@ namespace LinedRichTextBox
 
         #region TextChanged
         //TextChanged Event for rtbLinedBox
-        private void rtbLinedBox_TextChanged(object sender, EventArgs e)
+        private void RtbLinedBox_TextChanged(object sender, EventArgs e)
         {
             //Check if isChanged is true
             if (isChanged)
@@ -179,10 +179,11 @@ namespace LinedRichTextBox
         }
         #endregion
 
+        //Testing to select a line in the rich text box
         #region MouseEvents
         //MouseClick Event for rtbLineNums
         //In progress to highlight row when line num is clicked
-        private void rtbLineNums_MouseClick(object sender, MouseEventArgs e)
+        private void RtbLineNums_MouseClick(object sender, MouseEventArgs e)
         {
             //int firstcharindex = rtbLineNums.GetFirstCharIndexOfCurrentLine();
 
@@ -196,7 +197,7 @@ namespace LinedRichTextBox
         }
 
         //MouseEnter Event for rtbLineNums
-        private void rtbLineNums_MouseEnter(object sender, EventArgs e)
+        private void RtbLineNums_MouseEnter(object sender, EventArgs e)
         {
             rtbLineNums.Cursor = Cursors.Arrow;
         }
@@ -369,7 +370,8 @@ namespace LinedRichTextBox
                     return;
                 }
                 //Check if a line string is empty
-                if (rtbLinedBox.Lines[num - 1].ToString() == "" || rtbLinedBox.Text[carretPos - 1] == '\n')
+                if (rtbLinedBox.Lines[num - 1].ToString() == "" || 
+                    (rtbLinedBox.Lines[num - 1].ToString() != "" && rtbLinedBox.Text[carretPos - 1] == '\n'))
                 {
                     //call the removing method
                     Removing(num);
@@ -404,7 +406,6 @@ namespace LinedRichTextBox
                 //Check that the string width is bigger or equal to the control width
                 if (stringWidth + 8 > rtbLinedBox.Width)
                 {
-                    
                     //While integer StringWidth is greater or equal to the width of the richtextbox
                     while (stringWidth + 8 > rtbLinedBox.Width)
                     {
@@ -435,19 +436,35 @@ namespace LinedRichTextBox
 
             //Create a string array and set it to rtbLineNums.lines
             string[] lineArr = rtbLineNums.Lines;
+
             //turn the array into a list
             var lineColl = new List<string>(lineArr);
+
+            //remove lineNum from the list
+            lineColl.Remove((num).ToString());
+
             //Check if softwrap is enabled
             if (softWrap == true)
             {
-                for (int i = 0; i < lineArr.Count(); i++)
+                //This may not be elegant but it works to remove leading whitespace after a number
+                //This will remove all trailing whitespace after the previous num and leave the leading whitespace alone
+                //Loop to go through the list starting at the bottom
+                for(int i = lineColl.Count - 1; i > 0; i--)
                 {
-                    lineColl.Remove(" ");
+                    //Check if the element contains a space
+                    if(lineColl.ElementAt(i).Contains(" "))
+                    {
+                        //If it does remove it
+                        lineColl.RemoveAt(i);
+                    }
+                    else
+                    {
+                        break;//Exit the loop
+                    }
                 }
             }//End If(softwrap == true)
             //--------------------------------------------------------------------------------
-            //add a new line to the list
-            lineColl.Remove((num).ToString());
+           
             //convert back to an array
             lineArr = lineColl.ToArray();
             //set the array to the rtbLineNums.lines where the line numbers are stored
@@ -497,16 +514,16 @@ namespace LinedRichTextBox
 
         public int GetLineCount()
         {
-            int count = 0;
+            int count;
             rtbLinedBox.Refresh();
             count = rtbLinedBox.Lines.Count();
 
             return count;
         }
-        #endregion
 
         #endregion
 
-        
+        #endregion
+
     }
 }

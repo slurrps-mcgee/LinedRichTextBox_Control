@@ -47,10 +47,10 @@
             this.rtbLinedBox.TabStop = false;
             this.rtbLinedBox.Text = "";
             this.rtbLinedBox.WordWrap = false;
-            this.rtbLinedBox.VScroll += new System.EventHandler(this.rtbLinedBox_VScroll);
-            this.rtbLinedBox.TextChanged += new System.EventHandler(this.rtbLinedBox_TextChanged);
-            this.rtbLinedBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtbLinedBox_KeyDown);
-            this.rtbLinedBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbLinedBox_KeyPress);
+            this.rtbLinedBox.VScroll += new System.EventHandler(this.RtbLinedBox_VScroll);
+            this.rtbLinedBox.TextChanged += new System.EventHandler(this.RtbLinedBox_TextChanged);
+            this.rtbLinedBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RtbLinedBox_KeyDown);
+            this.rtbLinedBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.RtbLinedBox_KeyPress);
             // 
             // rtbLineNums
             // 
@@ -65,12 +65,12 @@
             this.rtbLineNums.Size = new System.Drawing.Size(64, 367);
             this.rtbLineNums.TabIndex = 1;
             this.rtbLineNums.Text = "1";
-            this.rtbLineNums.MouseClick += new System.Windows.Forms.MouseEventHandler(this.rtbLineNums_MouseClick);
-            this.rtbLineNums.MouseEnter += new System.EventHandler(this.rtbLineNums_MouseEnter);
+            this.rtbLineNums.MouseClick += new System.Windows.Forms.MouseEventHandler(this.RtbLineNums_MouseClick);
+            this.rtbLineNums.MouseEnter += new System.EventHandler(this.RtbLineNums_MouseEnter);
             // 
             // LinedRichTextBox
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbLinedBox);
             this.Controls.Add(this.rtbLineNums);
