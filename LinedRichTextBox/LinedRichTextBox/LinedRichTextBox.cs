@@ -23,22 +23,39 @@ namespace LinedRichTextBox
 
         //Variables to calculate Softwrap
         //Holds the string line
-        private string strLine;
+        //--private string strLine;
         //Holds the width of the string
-        private int stringWidth;
+        //--private int stringWidth;
         //Holds the current LineNum for rtbLinedBox
         private int intLineNum;
 
+        #region Variables for HTML
+        public static String EnteredString = "";
+        public static Boolean Is_LessThanKeyPressed = false;
+        public static Boolean Is_GreaterThanKeyPressed = false;
+        public static Boolean Is_AutoCompleteCharacterPressed = false;
+        public Boolean Is_SpaceBarKeyPressed = false;
+        public Boolean Is_TagClosedKeyPressed = false;
         #endregion
+
+        #endregion
+
+        //*********************************************************************
+        //   declare ListBox object CodeCompleteBox
+        //*********************************************************************
+        public ListBox CodeCompleteBox = new ListBox();
 
         public LinedRichTextBox()
         {
             InitializeComponent();
-            //Default Values on initialization
+            //Default Values on initialization of RichTextBoxes
             rtbLinedBox.SelectionIndent = 10;//Set the rtbLinedBox indentation
             LineNumForeColor = Color.Blue;//Set the color of the text in the LineNumForeColor setting
             rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
             softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
+
+            //Properties for CodeCompleteBox
+            CodeCompleteBox.BorderStyle = BorderStyle.None;
         }
 
         #region Events
@@ -81,6 +98,88 @@ namespace LinedRichTextBox
             {
                 isChanged = true;
             }//End Ctrl + Z
+
+            #region Auto HTML
+            switch (e.KeyCode)
+            {
+                case Keys.Space:
+                    Is_SpaceBarKeyPressed = true;
+
+                    if (Is_GreaterThanKeyPressed)
+                    {
+                        Is_GreaterThanKeyPressed = false;
+                    }
+                    Is_LessThanKeyPressed = false;
+
+                    for (int i = 0; i < HTMLTagList.tagslist.Length; i++)
+                    {
+                        if (EnteredString == HTMLTagList.tagslist[i])
+                        {
+                            EnteredString = HTMLTagList.tagslist[i];
+                        }
+                    }
+                    break;
+
+                case Keys.Up:
+                    if (Is_AutoCompleteCharacterPressed == false)
+                    {
+                        EnteredString = "";
+                        Is_AutoCompleteCharacterPressed = false;
+                    }
+                    Is_SpaceBarKeyPressed = false;
+                    break;
+
+                case Keys.Down:
+                    if (Is_AutoCompleteCharacterPressed == false)
+                    {
+                        EnteredString = "";
+                        Is_AutoCompleteCharacterPressed = false;
+                    }
+                    Is_SpaceBarKeyPressed = false;
+                    break;
+
+                case Keys.Left:
+                    if (Is_AutoCompleteCharacterPressed == false)
+                    {
+                        EnteredString = "";
+                        Is_AutoCompleteCharacterPressed = false;
+                    }
+                    Is_SpaceBarKeyPressed = false;
+                    break;
+
+                case Keys.Right:
+                    if (Is_AutoCompleteCharacterPressed == false)
+                    {
+                        EnteredString = "";
+                        Is_AutoCompleteCharacterPressed = false;
+                    }
+                    Is_SpaceBarKeyPressed = false;
+                    break;
+
+                case Keys.Enter:
+                    EnteredString = "";
+                    Is_SpaceBarKeyPressed = false;
+                    break;
+
+                case Keys.Back:
+                    int sel = rtbLinedBox.SelectionStart;
+                    Point pt = rtbLinedBox.GetPositionFromCharIndex(sel);
+                    char ch = rtbLinedBox.GetCharFromPosition(pt);
+                    if (EnteredString.Length > 0)
+                    {
+                        if (ch != '>')
+                        {
+                            EnteredString = EnteredString.Remove(EnteredString.Length - 1);
+                            Is_LessThanKeyPressed = true;
+                        }
+                    }
+                    if (ch == '<')
+                    {
+                        EnteredString = "";
+                    }
+                    break;
+            }
+            #endregion
         }
         #endregion
 
@@ -88,63 +187,83 @@ namespace LinedRichTextBox
         //Coding Options down below matching symbols generic library
         private void RtbLinedBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            try
+
+            #region Auto HTML
+            String ch = e.KeyChar.ToString();
+
+            this.ProcessAutoCompleteBrackets(ch);
+
+            if (ch == "<")
             {
-                //Auto complete brackets
-                String s = e.KeyChar.ToString();
-                int sel = rtbLinedBox.SelectionStart;
-                //Check if the autoBrackets feature is enabled
-                if (autoBrackets == true)
+                Is_LessThanKeyPressed = true;
+                Is_SpaceBarKeyPressed = false;
+                EnteredString = "";
+            }
+            else if (ch == ">")
+            {
+                if (!Is_TagClosedKeyPressed)
                 {
-                    //Switch statement to check brackets that are entered by user
-                    switch (s)
+                    Is_GreaterThanKeyPressed = true;
+                    Is_SpaceBarKeyPressed = false;
+
+                    int oldsel = rtbLinedBox.SelectionStart;
+
+                    for (int i = 0; i < HTMLTagList.tagslist.Length; i++)
                     {
+                        if (EnteredString == HTMLTagList.tagslist[i])
+                        {
+                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(oldsel, "</" + HTMLTagList.tagslist[i] + ">");
+                            rtbLinedBox.SelectionStart = rtbLinedBox.SelectionStart + oldsel;
+                            EnteredString = "";
+                        }
+                    }
 
-                        case "(":
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "()");
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + 1;
-                            break;
-
-                        case "{":
-                            String t = "{}";
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, t);
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + t.Length - 1;
-                            break;
-
-                        case "[":
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "[]");
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + 1;
-                            break;
-
-                        case "\"":
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"\"");
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + 1;
-                            break;
-
-                        case "'":
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "''");
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + 1;
-                            break;
-
-                        case "<":
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "<>");
-                            e.Handled = true;
-                            rtbLinedBox.SelectionStart = sel + 1;
-                            break;
-                    }//End Switch statement
-                }//End If statement
+                    Is_LessThanKeyPressed = false;
+                }
+                else
+                {
+                    Is_TagClosedKeyPressed = false;
+                }
             }
-            catch
+
+            else
             {
-
+                if (Is_LessThanKeyPressed)
+                {
+                    for (char a = 'a'; a <= 'z'; a++)
+                    {
+                        if (a.ToString() == ch)
+                        {
+                            EnteredString += ch;
+                        }
+                        else if (a.ToString().ToUpper() == ch)
+                        {
+                            EnteredString += ch;
+                        }
+                    }
+                    for (int a = 0; a <= 9; a++)
+                    {
+                        if (a.ToString() == ch)
+                        {
+                            EnteredString += ch;
+                        }
+                    }
+                }
             }
-            
-            
+
+
+            // if user itself closes the tag
+            if (Is_LessThanKeyPressed)
+            {
+                if (ch == "/")
+                {
+                    Is_TagClosedKeyPressed = true;
+                    Is_SpaceBarKeyPressed = true;
+                    EnteredString = "";
+                }
+            }
+            #endregion
+
         }
         #endregion
 
@@ -161,6 +280,7 @@ namespace LinedRichTextBox
         //TextChanged Event for rtbLinedBox
         private void RtbLinedBox_TextChanged(object sender, EventArgs e)
         {
+            
             //Check if isChanged is true
             if (isChanged)
             {
@@ -267,36 +387,72 @@ namespace LinedRichTextBox
             get { return autoBrackets; }
             set { autoBrackets = value; }
         }
-       
+
         #endregion
 
         #region Methods
 
-        #region Get String and GetStringWidth
-        private void GetString(int num)
+        public void ProcessAutoCompleteBrackets(String s)
         {
-            //Get the most recent line
-            intLineNum = (num);
+            int sel = rtbLinedBox.SelectionStart;
+            switch (s)
+            {
+                case "(":
+                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, ")");
+                    rtbLinedBox.SelectionStart = sel;
+                    Is_AutoCompleteCharacterPressed = true;
+                    break;
+
+                case "[":
+                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "]");
+                    rtbLinedBox.SelectionStart = sel;
+                    Is_AutoCompleteCharacterPressed = true;
+                    break;
+
+                case "\"":
+                    Is_AutoCompleteCharacterPressed = true;
+                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"");
+                    rtbLinedBox.SelectionStart = sel;
+                    break;
+
+                case "'":
+                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "'");
+                    rtbLinedBox.SelectionStart = sel;
+                    Is_AutoCompleteCharacterPressed = true;
+                    break;
+            }
+        }
+
+        #region Get String and GetStringWidth
+        //Returns a string at the given line number
+        private string GetString(int lineNum)
+        {
+            //Create a variable to hold the string
+            string returnString = "";
 
             //Try and get the most recent line in the rtbLinedBox
             try
             {
-                //Set line to rtbLinedBox.Lines[lineCount]
-                strLine = rtbLinedBox.Lines[intLineNum];
+                //Set returnString to rtbLinedBox.Lines[lineCount]
+                returnString = rtbLinedBox.Lines[lineNum];
+                return returnString;//Return the string
             }
             catch
             {
                 //Do nothing
-                return;
+                return returnString;//Return the empty string
             }
         }
 
-        private void GetStringWidth(int num)
+        //Returns a given strings width
+        private int GetStringWidth(int lineNum)
         {
-            //Call the GetString function and send it the num integer
-            GetString(num);
+            //Create a variable to hold the string and call the GetString method giving it the lineNum
+            string strInfo = GetString(lineNum);
             //Set the string width (TextRenderer.MeasureText(Send it string line, rtbLinedBox.Font property).Get the Width)
-            stringWidth = TextRenderer.MeasureText(strLine, rtbLinedBox.Font).Width;
+            int strWidth = TextRenderer.MeasureText(strInfo, rtbLinedBox.Font).Width;
+
+            return strWidth;//Return the string width
         }
         #endregion
 
@@ -330,28 +486,25 @@ namespace LinedRichTextBox
 
         #region Increase / Decrease
         //Used to call the Adding method
-        public void IncreaseLineNum(int num)
+        public void IncreaseLineNum(int lineNum)
         {
             //Check if the selection start is at 0
             if (rtbLinedBox.SelectionStart == 0)
             {
-                //Call GetStringWidth
-                GetStringWidth(num);
-                //If it does call Adding(num + 2)
-                Adding(num + 2);
+                
+                //If it does call Adding(int LineNum, int strWidth)
+                Adding(lineNum + 2, GetStringWidth(lineNum));
             }
             else
             {
-                //Call GetStringWidth and give it the last line 
-                //Which is num - 1
-                GetStringWidth(num - 1);
-                //Else give Adding(num+1)
-                Adding(num + 1);
+
+                //Else give Adding(int LineNum, int strWidth)
+                Adding(lineNum + 1, GetStringWidth(lineNum - 1));
             }
         }//End IncreaseLineNum
 
         //Used to call Removing method
-        public void DecreaseLineNum(int num)
+        public void DecreaseLineNum(int lineNum)
         {
             int carretPos = rtbLinedBox.SelectionStart;
             //Check to see if there is text selected
@@ -370,11 +523,11 @@ namespace LinedRichTextBox
                     return;
                 }
                 //Check if a line string is empty
-                if (rtbLinedBox.Lines[num - 1].ToString() == "" || 
-                    (rtbLinedBox.Lines[num - 1].ToString() != "" && rtbLinedBox.Text[carretPos - 1] == '\n'))
+                if (rtbLinedBox.Lines[lineNum - 1].ToString() == "" || 
+                    (rtbLinedBox.Lines[lineNum - 1].ToString() != "" && rtbLinedBox.Text[carretPos - 1] == '\n'))
                 {
                     //call the removing method
-                    Removing(num);
+                    Removing(lineNum);
                 }
                 else
                 {
@@ -388,12 +541,13 @@ namespace LinedRichTextBox
 
         #region Adding or Removing Line Numbers
         //Method to add lines to the string array rtbLineNums
-        private void Adding(int num)
+        private void Adding(int lineNum, int intStrWidth)
         {
             //Pre: Needs the variable num to be initialized.
             //Purpose: To Add line numbers or spaces depending whether softWrap is on or not
             //to the line numbers text box.
             //Pose: Add the line numbers or spaces in the rtbLineNums box.
+
 
             //Create a string array and set it to rtbLineNums.lines
             string[] lineArr = rtbLineNums.Lines;
@@ -404,13 +558,13 @@ namespace LinedRichTextBox
             {
                 //Adds spaces if the SoftWrap is true to the line numbers------------
                 //Check that the string width is bigger or equal to the control width
-                if (stringWidth + 8 > rtbLinedBox.Width)
+                if (intStrWidth + 8 > rtbLinedBox.Width)
                 {
                     //While integer StringWidth is greater or equal to the width of the richtextbox
-                    while (stringWidth + 8 > rtbLinedBox.Width)
+                    while (intStrWidth + 8 > rtbLinedBox.Width)
                     {
                         //Change the integer stringWidth to equal itself minus width of the rtbLinedBox
-                        stringWidth = (stringWidth + Indentation) - rtbLinedBox.Width;
+                        intStrWidth = (intStrWidth + Indentation) - rtbLinedBox.Width;
                         //add a new empty line to the list
                         lineColl.Add(" ");
                     }
@@ -418,7 +572,7 @@ namespace LinedRichTextBox
             }//End If(softwrap == true)
             //--------------------------------------------------------------------------------
             //add a new line to the list
-            lineColl.Add((num).ToString());
+            lineColl.Add((lineNum).ToString());
             //convert back to an array
             lineArr = lineColl.ToArray();
             //set the array to the rtbLineNums.lines where the line numbers are stored
@@ -427,8 +581,10 @@ namespace LinedRichTextBox
         }//End Adding()
 
         //Method to remove lines from the string array rtbLineNums
-        private void Removing(int num)
+        private void Removing(int lineNum)
         {
+            //-----When removing a line in softwrap and there is a blank line before it, it does not remove correctly
+
             //Pre: Needs the variable num to be initialized.
             //Purpose: To Add line numbers or spaces depending whether softWrap is on or not
             //to the line numbers text box.
@@ -441,7 +597,7 @@ namespace LinedRichTextBox
             var lineColl = new List<string>(lineArr);
 
             //remove lineNum from the list
-            lineColl.Remove((num).ToString());
+            lineColl.Remove((lineNum).ToString());
 
             //Check if softwrap is enabled
             if (softWrap == true)
@@ -488,10 +644,8 @@ namespace LinedRichTextBox
 
             for (int i = 0; i < (rtbLinedBox.Lines.Count() - 1); i++)
             {
-                //Get the string width
-                GetStringWidth(i);
-                //Call adding method
-                Adding(i + 2);
+               //Call adding method
+                Adding(i + 2, GetStringWidth(i));
             }
             LoadDefaults();
         }//End RedrawLines
@@ -525,34 +679,36 @@ namespace LinedRichTextBox
 
         #endregion
 
-        //public void AutoTab(int num)
-        //{
-        //    int tabCount = 0;
-        //    strLine = rtbLinedBox.Lines[num];
-        //    foreach(char c in strLine)
-        //    {
-        //        if(c == '\t')
-        //        {
-        //            tabCount++;
-        //        }
-        //    }
+        //Test Code
+        public void AutoTab(int num)
+        {
+            //int tabCount = 0;
+            //strLine = rtbLinedBox.Lines[num];
+            //foreach (char c in strLine)
+            //{
+            //    if (c == '\t')
+            //    {
+            //        tabCount++;
+            //    }
+            //}
 
-        //    if(strLine.Contains(">"))
-        //    {
-        //        if(tabCount == 0)
-        //        {
-        //            rtbLinedBox.Lines[num + 1].Append('\t');
-        //            strLine.Append('\t');
-        //        }
-        //        while(tabCount != 0)
-        //        {
-        //            strLine.Append('\t');
-        //            tabCount--;
-        //        }
-        //    }
+            //if (strLine.Contains(">"))
+            //{
+            //    if (tabCount == 0)
+            //    {
+            //        rtbLinedBox.Lines[num + 1].Append('\t');
+            //        strLine.Append('\t');
+            //    }
+            //    while (tabCount != 0)
+            //    {
+            //        strLine.Append('\t');
+            //        tabCount--;
+            //    }
+            //}
+        }
 
+       
 
-        //}
-
+       
     }
 }

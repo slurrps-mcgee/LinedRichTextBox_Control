@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HTMLTagList.cs" />
     <Compile Include="LinedRichTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
