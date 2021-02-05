@@ -40,22 +40,14 @@ namespace LinedRichTextBox
 
         #endregion
 
-        //*********************************************************************
-        //   declare ListBox object CodeCompleteBox
-        //*********************************************************************
-        public ListBox CodeCompleteBox = new ListBox();
-
         public LinedRichTextBox()
         {
             InitializeComponent();
-            //Default Values on initialization of RichTextBoxes
+            //Default Values on initialization
             rtbLinedBox.SelectionIndent = 10;//Set the rtbLinedBox indentation
             LineNumForeColor = Color.Blue;//Set the color of the text in the LineNumForeColor setting
             rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
             softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
-
-            //Properties for CodeCompleteBox
-            CodeCompleteBox.BorderStyle = BorderStyle.None;
         }
 
         #region Events
