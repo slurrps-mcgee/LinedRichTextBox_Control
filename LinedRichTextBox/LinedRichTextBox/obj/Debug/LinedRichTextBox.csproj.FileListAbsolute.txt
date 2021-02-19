@@ -62,3 +62,29 @@ C:\Users\klamb\Source\Repos\LinedRichTextBox_Control\LinedRichTextBox\LinedRichT
 C:\Users\klamb\Source\Repos\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
 C:\Users\klamb\Source\Repos\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
 C:\Users\klamb\Source\Repos\LinedRichTextBox_Control\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.pdb
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csprojAssemblyReference.cache
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.LinedRichTextBox.resources
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.GenerateResource.cache
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
+C:\Users\klamb\Desktop\GitHub\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.pdb
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csprojAssemblyReference.cache
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.LinedRichTextBox.resources
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.GenerateResource.cache
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb
+E:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll.config
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll.config
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.dll
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\bin\Debug\LinedRichTextBox.pdb
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csprojAssemblyReference.cache
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.LinedRichTextBox.resources
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.GenerateResource.cache
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.csproj.CoreCompileInputs.cache
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.dll
+F:\Testing Projects\LinedRichTextBox\LinedRichTextBox\LinedRichTextBox\obj\Debug\LinedRichTextBox.pdb

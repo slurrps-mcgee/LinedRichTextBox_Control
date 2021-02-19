@@ -16,10 +16,6 @@ namespace LinedRichTextBox
         private bool isChanged = false;
         //Holds wether softWrap is on or off set to rtbLinedBox.WordWrap value
         private static bool softWrap;
-        //Holds wether autoBrackets is on or off default off
-        private static bool autoBrackets = true;
-        //Holds the rtbLinedBox indentation
-        private static int indentation = 10;
 
         //Variables to calculate Softwrap
         //Holds the string line
@@ -27,28 +23,34 @@ namespace LinedRichTextBox
         //Holds the width of the string
         //--private int stringWidth;
         //Holds the current LineNum for rtbLinedBox
+        private int carretPos;
         private int intLineNum;
 
-        #region Variables for HTML
-        public static String EnteredString = "";
-        public static Boolean Is_LessThanKeyPressed = false;
-        public static Boolean Is_GreaterThanKeyPressed = false;
-        public static Boolean Is_AutoCompleteCharacterPressed = false;
-        public Boolean Is_SpaceBarKeyPressed = false;
-        public Boolean Is_TagClosedKeyPressed = false;
         #endregion
 
-        #endregion
+        //Holds the IDERichTextBox Control to the LinedBox
+        public readonly IDERTBControl rtbLinedBox = new IDERTBControl();
 
+        #region Control Load
         public LinedRichTextBox()
         {
             InitializeComponent();
-            //Default Values on initialization
-            rtbLinedBox.SelectionIndent = 10;//Set the rtbLinedBox indentation
-            LineNumForeColor = Color.Blue;//Set the color of the text in the LineNumForeColor setting
-            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
-            softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
+            //Load the defaults
+            LoadDefaults();
+
+            //---- RTB Events----
+            rtbLinedBox.KeyDown += new KeyEventHandler(RtbLinedBox_KeyDown);
+            rtbLinedBox.KeyPress += new KeyPressEventHandler(RtbLinedBox_KeyPress);
+            rtbLinedBox.VScroll += new EventHandler(RtbLinedBox_VScroll);
+            rtbLinedBox.TextChanged += new EventHandler(RtbLinedBox_TextChanged);
+
+            //Add control
+            Controls.Add(rtbLinedBox);
+
+            //Bring control to front
+            rtbLinedBox.BringToFront();
         }
+        #endregion
 
         #region Events
 
@@ -60,18 +62,19 @@ namespace LinedRichTextBox
             //Set lineNum variable to equal the rtbLinedBox line count
             intLineNum = rtbLinedBox.Lines.Count();
 
-            //Check if keycode is Enter
-            if (e.KeyCode == Keys.Enter)
+            switch (e.KeyCode)
             {
-                IncreaseLineNum(intLineNum);
-            }//End KeyCode.Enter
+                case Keys.Enter:
+                    //Increase Line number
+                    IncreaseLineNum(intLineNum);
+                    break;
 
-            //Check if keycode is Back
-            if (e.KeyCode == Keys.Back)
-            {
-                DecreaseLineNum(intLineNum);
-                rtbLinedBox.ScrollToCaret();
-            }//End KeyCode.Back
+                case Keys.Back:
+                    //Decrease Line number
+                    DecreaseLineNum(intLineNum);
+                    
+                    break;
+            }
 
             //Check if keycode is combo V + Control
             if (e.KeyCode == Keys.V && e.Control)
@@ -91,87 +94,6 @@ namespace LinedRichTextBox
                 isChanged = true;
             }//End Ctrl + Z
 
-            #region Auto HTML
-            switch (e.KeyCode)
-            {
-                case Keys.Space:
-                    Is_SpaceBarKeyPressed = true;
-
-                    if (Is_GreaterThanKeyPressed)
-                    {
-                        Is_GreaterThanKeyPressed = false;
-                    }
-                    Is_LessThanKeyPressed = false;
-
-                    for (int i = 0; i < HTMLTagList.tagslist.Length; i++)
-                    {
-                        if (EnteredString == HTMLTagList.tagslist[i])
-                        {
-                            EnteredString = HTMLTagList.tagslist[i];
-                        }
-                    }
-                    break;
-
-                case Keys.Up:
-                    if (Is_AutoCompleteCharacterPressed == false)
-                    {
-                        EnteredString = "";
-                        Is_AutoCompleteCharacterPressed = false;
-                    }
-                    Is_SpaceBarKeyPressed = false;
-                    break;
-
-                case Keys.Down:
-                    if (Is_AutoCompleteCharacterPressed == false)
-                    {
-                        EnteredString = "";
-                        Is_AutoCompleteCharacterPressed = false;
-                    }
-                    Is_SpaceBarKeyPressed = false;
-                    break;
-
-                case Keys.Left:
-                    if (Is_AutoCompleteCharacterPressed == false)
-                    {
-                        EnteredString = "";
-                        Is_AutoCompleteCharacterPressed = false;
-                    }
-                    Is_SpaceBarKeyPressed = false;
-                    break;
-
-                case Keys.Right:
-                    if (Is_AutoCompleteCharacterPressed == false)
-                    {
-                        EnteredString = "";
-                        Is_AutoCompleteCharacterPressed = false;
-                    }
-                    Is_SpaceBarKeyPressed = false;
-                    break;
-
-                case Keys.Enter:
-                    EnteredString = "";
-                    Is_SpaceBarKeyPressed = false;
-                    break;
-
-                case Keys.Back:
-                    int sel = rtbLinedBox.SelectionStart;
-                    Point pt = rtbLinedBox.GetPositionFromCharIndex(sel);
-                    char ch = rtbLinedBox.GetCharFromPosition(pt);
-                    if (EnteredString.Length > 0)
-                    {
-                        if (ch != '>')
-                        {
-                            EnteredString = EnteredString.Remove(EnteredString.Length - 1);
-                            Is_LessThanKeyPressed = true;
-                        }
-                    }
-                    if (ch == '<')
-                    {
-                        EnteredString = "";
-                    }
-                    break;
-            }
-            #endregion
         }
         #endregion
 
@@ -179,82 +101,6 @@ namespace LinedRichTextBox
         //Coding Options down below matching symbols generic library
         private void RtbLinedBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            #region Auto HTML
-            String ch = e.KeyChar.ToString();
-
-            this.ProcessAutoCompleteBrackets(ch);
-
-            if (ch == "<")
-            {
-                Is_LessThanKeyPressed = true;
-                Is_SpaceBarKeyPressed = false;
-                EnteredString = "";
-            }
-            else if (ch == ">")
-            {
-                if (!Is_TagClosedKeyPressed)
-                {
-                    Is_GreaterThanKeyPressed = true;
-                    Is_SpaceBarKeyPressed = false;
-
-                    int oldsel = rtbLinedBox.SelectionStart;
-
-                    for (int i = 0; i < HTMLTagList.tagslist.Length; i++)
-                    {
-                        if (EnteredString == HTMLTagList.tagslist[i])
-                        {
-                            rtbLinedBox.Text = rtbLinedBox.Text.Insert(oldsel, "</" + HTMLTagList.tagslist[i] + ">");
-                            rtbLinedBox.SelectionStart = rtbLinedBox.SelectionStart + oldsel;
-                            EnteredString = "";
-                        }
-                    }
-
-                    Is_LessThanKeyPressed = false;
-                }
-                else
-                {
-                    Is_TagClosedKeyPressed = false;
-                }
-            }
-
-            else
-            {
-                if (Is_LessThanKeyPressed)
-                {
-                    for (char a = 'a'; a <= 'z'; a++)
-                    {
-                        if (a.ToString() == ch)
-                        {
-                            EnteredString += ch;
-                        }
-                        else if (a.ToString().ToUpper() == ch)
-                        {
-                            EnteredString += ch;
-                        }
-                    }
-                    for (int a = 0; a <= 9; a++)
-                    {
-                        if (a.ToString() == ch)
-                        {
-                            EnteredString += ch;
-                        }
-                    }
-                }
-            }
-
-
-            // if user itself closes the tag
-            if (Is_LessThanKeyPressed)
-            {
-                if (ch == "/")
-                {
-                    Is_TagClosedKeyPressed = true;
-                    Is_SpaceBarKeyPressed = true;
-                    EnteredString = "";
-                }
-            }
-            #endregion
 
         }
         #endregion
@@ -318,6 +164,12 @@ namespace LinedRichTextBox
         #endregion
 
         #region Settings
+        //FileExtension
+        public string FileExt
+        {
+            get { return Properties.Settings.Default.FileExt; }
+            set { Properties.Settings.Default.FileExt = value; }
+        }
         //Font settings for both rich text boxes
         public override Font Font
         {
@@ -328,13 +180,7 @@ namespace LinedRichTextBox
                 _Font = rtbLineNums.Font = value;
             }
         }
-        //Indentation on the Main rich text box rtbLinedBox
-        public int Indentation
-        {
-            get { return indentation; }
-            set { rtbLinedBox.SelectionIndent = indentation = value; }
-        }
-
+        
         //rtbLineNums rich text box settings
         //rtbLineNums ForeColor
         public Color LineNumForeColor
@@ -342,78 +188,68 @@ namespace LinedRichTextBox
             get { return rtbLineNums.ForeColor; }
             set { rtbLineNums.ForeColor = value; }
         }
-        //rtbLineNums BackColor
-        public Color LineNumBackColor
-        {
-            get { return rtbLineNums.BackColor; }
-            set { rtbLineNums.BackColor = value; }
-        }
+
         //rtbLinedBox rich text box settings
         //ForeColor
-        public Color MainForeColor
+        public Color ControlForeColor
         {
             get { return rtbLinedBox.ForeColor; }
-            set { rtbLinedBox.ForeColor = value; }
+            set { rtbLinedBox.ForeColor = value;
+                  rtbLinedBox.AutoCompleteBox.ForeColor = value;
+                }
         }
         //BackColor
-        public Color MainBackColor
+        public Color ControlBackColor
         {
             get { return rtbLinedBox.BackColor; }
-            set { rtbLinedBox.BackColor = value; }
+            set { rtbLinedBox.BackColor = value;
+                  rtbLineNums.BackColor = value;
+                  rtbLinedBox.AutoCompleteBox.BackColor = value;
+                }
         }
+        
+        //Booleans
         //Gets wether lineNumers is visible or not
         public bool LineNumbers
         {
             get { return rtbLineNums.Visible; }
             set { rtbLineNums.Visible = value; }
         }
+
         //returns wether softwrap is on or off
         public bool SoftWrap
         {
             get { return softWrap; }
             set { softWrap = rtbLinedBox.WordWrap = value; }
         }
+
+        
+
+        //RTB Auto-----
+        //AutoComplete
+        public bool AutoComplete
+        {
+            get { return Properties.Settings.Default.AutoComplete; }
+            set { Properties.Settings.Default.AutoComplete = value; }
+        }
+
+        //AutoHTML
+        public bool AutoHTML
+        {
+            get { return Properties.Settings.Default.AutoHTML; }
+            set { Properties.Settings.Default.AutoHTML = value; }
+        }
+
         //Gets wether auto brackets is on or off
         public bool AutoBrackets
         {
-            get { return autoBrackets; }
-            set { autoBrackets = value; }
+            get { return Properties.Settings.Default.AutoBrackets; }
+            set { Properties.Settings.Default.AutoBrackets = value; }
         }
 
         #endregion
 
         #region Methods
-
-        public void ProcessAutoCompleteBrackets(String s)
-        {
-            int sel = rtbLinedBox.SelectionStart;
-            switch (s)
-            {
-                case "(":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, ")");
-                    rtbLinedBox.SelectionStart = sel;
-                    Is_AutoCompleteCharacterPressed = true;
-                    break;
-
-                case "[":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "]");
-                    rtbLinedBox.SelectionStart = sel;
-                    Is_AutoCompleteCharacterPressed = true;
-                    break;
-
-                case "\"":
-                    Is_AutoCompleteCharacterPressed = true;
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "\"");
-                    rtbLinedBox.SelectionStart = sel;
-                    break;
-
-                case "'":
-                    rtbLinedBox.Text = rtbLinedBox.Text.Insert(sel, "'");
-                    rtbLinedBox.SelectionStart = sel;
-                    Is_AutoCompleteCharacterPressed = true;
-                    break;
-            }
-        }
 
         #region Get String and GetStringWidth
         //Returns a string at the given line number
@@ -489,7 +325,6 @@ namespace LinedRichTextBox
             }
             else
             {
-
                 //Else give Adding(int LineNum, int strWidth)
                 Adding(lineNum + 1, GetStringWidth(lineNum - 1));
             }
@@ -498,7 +333,7 @@ namespace LinedRichTextBox
         //Used to call Removing method
         public void DecreaseLineNum(int lineNum)
         {
-            int carretPos = rtbLinedBox.SelectionStart;
+            carretPos = rtbLinedBox.SelectionStart;
             //Check to see if there is text selected
             if (rtbLinedBox.SelectionLength > 0)
             {
@@ -520,6 +355,7 @@ namespace LinedRichTextBox
                 {
                     //call the removing method
                     Removing(lineNum);
+                    
                 }
                 else
                 {
@@ -556,7 +392,7 @@ namespace LinedRichTextBox
                     while (intStrWidth + 8 > rtbLinedBox.Width)
                     {
                         //Change the integer stringWidth to equal itself minus width of the rtbLinedBox
-                        intStrWidth = (intStrWidth + Indentation) - rtbLinedBox.Width;
+                        intStrWidth -= rtbLinedBox.Width;
                         //add a new empty line to the list
                         lineColl.Add(" ");
                     }
@@ -646,7 +482,23 @@ namespace LinedRichTextBox
         public void LoadDefaults()
         {
             //Load Default Values
-            rtbLinedBox.SelectionIndent = indentation;
+            //-----Variable Properties-----
+            softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
+
+            //-----RTBLineNums Properties-----
+            LineNumForeColor = Color.LightBlue;//Set the color of the text in the LineNumForeColor setting
+            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
+
+            //-----RTB Properties-----
+            rtbLinedBox.BackColor = rtbLineNums.BackColor;
+            rtbLinedBox.ForeColor = Color.White;
+            rtbLinedBox.Dock = DockStyle.Fill;
+            rtbLinedBox.BorderStyle = BorderStyle.None;
+
+            //-----RTBListBox-----
+            rtbLinedBox.AutoCompleteBox.ForeColor = rtbLinedBox.ForeColor;
+            rtbLinedBox.AutoCompleteBox.BackColor = rtbLinedBox.BackColor;
+
             //Set the alignment of the rtbLineNums rich text box
             rtbLineNums.SelectAll();
             rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
@@ -671,36 +523,5 @@ namespace LinedRichTextBox
 
         #endregion
 
-        //Test Code
-        public void AutoTab(int num)
-        {
-            //int tabCount = 0;
-            //strLine = rtbLinedBox.Lines[num];
-            //foreach (char c in strLine)
-            //{
-            //    if (c == '\t')
-            //    {
-            //        tabCount++;
-            //    }
-            //}
-
-            //if (strLine.Contains(">"))
-            //{
-            //    if (tabCount == 0)
-            //    {
-            //        rtbLinedBox.Lines[num + 1].Append('\t');
-            //        strLine.Append('\t');
-            //    }
-            //    while (tabCount != 0)
-            //    {
-            //        strLine.Append('\t');
-            //        tabCount--;
-            //    }
-            //}
-        }
-
-       
-
-       
     }
 }
