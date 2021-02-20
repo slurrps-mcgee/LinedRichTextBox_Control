@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LinedRichTextBox
 {
-    class testClass
+    class TestClass
     {
     }
 }

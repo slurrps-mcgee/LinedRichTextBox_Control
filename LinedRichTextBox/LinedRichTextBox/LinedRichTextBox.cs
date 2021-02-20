@@ -18,18 +18,13 @@ namespace LinedRichTextBox
         private static bool softWrap;
 
         //Variables to calculate Softwrap
-        //Holds the string line
-        //--private string strLine;
-        //Holds the width of the string
-        //--private int stringWidth;
-        //Holds the current LineNum for rtbLinedBox
         private int carretPos;
         private int intLineNum;
 
         #endregion
 
         //Holds the IDERichTextBox Control to the LinedBox
-        public readonly IDERTBControl rtbLinedBox = new IDERTBControl();
+        public readonly SyntaxControl rtbLinedBox = new SyntaxControl();
 
         #region Control Load
         public LinedRichTextBox()
@@ -49,6 +44,32 @@ namespace LinedRichTextBox
 
             //Bring control to front
             rtbLinedBox.BringToFront();
+        }
+
+        //Holds the default values for the Control
+        public void LoadDefaults()
+        {
+            //Load Default Values
+            //-----Variable Properties-----
+            softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
+
+            //-----RTBLineNums Properties-----
+            LineNumForeColor = Color.LightBlue;//Set the color of the text in the LineNumForeColor setting
+            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
+
+            //-----RTB Properties-----
+            rtbLinedBox.BackColor = rtbLineNums.BackColor;
+            rtbLinedBox.ForeColor = Color.White;
+            rtbLinedBox.Dock = DockStyle.Fill;
+            rtbLinedBox.BorderStyle = BorderStyle.None;
+
+            //-----RTBListBox-----
+            rtbLinedBox.AutoCompleteBox.ForeColor = rtbLinedBox.ForeColor;
+            rtbLinedBox.AutoCompleteBox.BackColor = rtbLinedBox.BackColor;
+
+            //Set the alignment of the rtbLineNums rich text box
+            rtbLineNums.SelectAll();
+            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
         }
         #endregion
 
@@ -478,31 +499,7 @@ namespace LinedRichTextBox
             LoadDefaults();
         }//End RedrawLines
 
-        //Holds the default values for the Control
-        public void LoadDefaults()
-        {
-            //Load Default Values
-            //-----Variable Properties-----
-            softWrap = rtbLinedBox.WordWrap;//set the softWrap to the rtbLinedBox.WordWrap property
-
-            //-----RTBLineNums Properties-----
-            LineNumForeColor = Color.LightBlue;//Set the color of the text in the LineNumForeColor setting
-            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;//Set the alignment of the rtbLineNums rich text box
-
-            //-----RTB Properties-----
-            rtbLinedBox.BackColor = rtbLineNums.BackColor;
-            rtbLinedBox.ForeColor = Color.White;
-            rtbLinedBox.Dock = DockStyle.Fill;
-            rtbLinedBox.BorderStyle = BorderStyle.None;
-
-            //-----RTBListBox-----
-            rtbLinedBox.AutoCompleteBox.ForeColor = rtbLinedBox.ForeColor;
-            rtbLinedBox.AutoCompleteBox.BackColor = rtbLinedBox.BackColor;
-
-            //Set the alignment of the rtbLineNums rich text box
-            rtbLineNums.SelectAll();
-            rtbLineNums.SelectionAlignment = HorizontalAlignment.Center;
-        }
+       
         #endregion
 
         #region Drag And Drop Public method

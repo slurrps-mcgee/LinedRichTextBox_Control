@@ -61,7 +61,7 @@ namespace LinedRichTextBox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".txt")]
         public string FileExt {
             get {
                 return ((string)(this["FileExt"]));

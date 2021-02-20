@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace LinedRichTextBox
 {
 
-    public class IDERTBControl : RichTextBox
+    public class SyntaxControl : RichTextBox
     {
         //declare ListBox object AutoCompleteBox
         public ListBox AutoCompleteBox = new ListBox();
@@ -18,24 +18,28 @@ namespace LinedRichTextBox
         //****************************
         //Holds the Controls Variables
         #region Variables
+        
+        //Auto Complete ListBox
+        //Holds the autostring to be checked on the list box
+        public static string autoString = "";
         //Holds whether the listbox is added
         public static bool isAutoCompleteBoxAdded = false;
 
-        //Holds the htmlstring to be checked to auto close html brackets
-        public static string htmlString = "";
-        //Holds the autostring to be checked on the list box
-        public static string autoString = "";
-
+        //AutoHTML Tag Closing
         //Holds whether < is pressed
         public static bool isLessThanKeyPressed = false;
         //Holds whether > is pressed
         public static bool isGreaterThanKeyPressed = false;
+        //Holds whether a tag has been closed
+        public bool Is_TagClosedKeyPressed = false;
+        //Holds the htmlstring to be checked to auto close html brackets
+        public static string htmlString = "";
+
+        //AutoBrackets
         //Hold whether a bracket was pressed
         public static bool isAutoBracket = false;
 
-
-        public bool Is_TagClosedKeyPressed = false;
-
+        
         //Settings-----
         // declare backcolor & forecolor variables
         public static Color backcolor = SystemColors.Window;
@@ -47,7 +51,7 @@ namespace LinedRichTextBox
         //*********************** 
         //RichTextBox Constructor
         #region Constructor
-        public IDERTBControl()
+        public SyntaxControl()
         {
             //Properties for ListBox
             AutoCompleteBox.BorderStyle = BorderStyle.FixedSingle;
@@ -243,7 +247,7 @@ namespace LinedRichTextBox
         #endregion
         //*******************************************
 
-        //Would like to edit this to include CSS and a few other languages but will keep simply for now
+        //Would like to edit this to include CSS and a few other languages but will keep simple for now
         //to test
         //******************************
         //Handles Auto Closing HTML Tags
@@ -255,6 +259,7 @@ namespace LinedRichTextBox
             {
                 //Update Modifiers
                 isLessThanKeyPressed = true;
+                isGreaterThanKeyPressed = false;
                 //Set htmlString to empty
                 htmlString = "";
             }
@@ -306,21 +311,53 @@ namespace LinedRichTextBox
         //****************************************
         //Handles filling the AutoComplete ListBox
         #region AutoComplete Items
-        public void AutoComplete()
+        public void AutoComplete(string key)
         {
+            #region Variables
+            //String to hold the selectedItem
+            string selectedItem = "";
+            #endregion
 
+            #region GetKeyChar
+            //Check if the key contains hyphen -
+            if (key.Contains("-"))
+            {
+                //Concat the key & autoString postfix
+                autoString += key;
+            }
+            else
+            {
+                //Check to make sure it is a - Z and not any special character
+                //[^\w\.@-] matches any character that is not a word character, a period, an @ symbol, or a hyphen
+                key = Regex.Replace(key, @"[^\w\.@-]", "");
+                //Concat the key & autoString postfix
+                autoString += key;
+            }
+            #endregion
+            
             //ToDo:
             //TESTING!!!-----
-            //add each item to AutoCompleteBox
-            foreach (String item in HTMLTagList.keywordsList)
+            #region ForEach loops to add items into the control
+            //add each HTML item to AutoCompleteBox
+            foreach (string tag in HTMLTagList.tagsList)
             {
                 //check item is starts with EnteredKey or not
-                if (item.ToUpper().StartsWith(autoString.ToUpper()))
+                if (tag.StartsWith(autoString))
                 {
-                    AutoCompleteBox.Items.Add(item);
+                    //Check that the tag is not already added
+                    if(AutoCompleteBox.Items.Contains(tag))
+                    {
+                        //Break if it already exists
+                        break;
+                    }
+                    //Add tag
+                    AutoCompleteBox.Items.Add(tag);
                 }
             }
-            
+
+
+            #endregion
+
             //Foreach loop will go in here once fully tested
             //Check if the file extension is .html
             if (Properties.Settings.Default.FileExt == ".html")
@@ -329,8 +366,9 @@ namespace LinedRichTextBox
             }
             
             //Check that the autoCompleteBox items is not empty
-            if(AutoCompleteBox.Items.Count > 0)
+            if(AutoCompleteBox.Items.Count > 0 && autoString != "")
             {
+                #region ControlProperties and Size
                 //  set Default cursor to AutoCompleteBox
                 AutoCompleteBox.Cursor = Cursors.Default;
 
@@ -343,27 +381,44 @@ namespace LinedRichTextBox
 
                 //adding controls of AutoCompleteBox to RTB
                 Controls.Add(AutoCompleteBox);
+                #endregion
 
-                //  set isAutoCompleteBoxAdded to true
+                //Set isAutoCompleteBoxAdded to true
                 isAutoCompleteBoxAdded = true;
 
-                //  read each item from AutoCompleteBox to set SelectedItem
-                foreach (String item in HTMLTagList.keywordsList)
+                #region ForEach loop to read through items
+                //Read through the controls items
+                //set the selectedItem string
+                foreach (String item in AutoCompleteBox.Items)
                 {
-                    if (item.ToUpper().StartsWith(autoString.ToUpper()))
+                    if (item.StartsWith(autoString))
                     {
-                        AutoCompleteBox.SelectedItem = item;
-
+                        selectedItem = item;
                         break;
                     }
                     else
                     {
-                        AutoCompleteBox.SelectedIndex = -1;
+                        selectedItem = "";
                     }
                 }
+                #endregion
+
+                #region If Statement to set the selected item in the control
+                //Check string to set selected item
+                if (selectedItem == "")
+                {
+                    AutoCompleteBox.SelectedIndex = -1;
+                }
+                else
+                {
+                    AutoCompleteBox.SelectedItem = selectedItem;
+                }
+                #endregion
+
             }
             else
             {
+                //Set isAutoCompleteBoxAdded to false
                 isAutoCompleteBoxAdded = false;
             }
 
@@ -383,20 +438,24 @@ namespace LinedRichTextBox
         {
             base.OnTextChanged(e);
             
-            //Check if the RTB text is empty
+            //Check that the list box is not added
             if (!isAutoCompleteBoxAdded)
             {
-                //Check if the listbox is added
+                //Check if the RTB control Text is empty
                 if (Text == "")
                 {
-                    //remove the control
+                    //Clear the listBox
+                    AutoCompleteBox.Items.Clear();
+                    //Remove the control ListBox
                     Controls.Remove(AutoCompleteBox);
-                    //set bool isAutoCompleteBoxAdded to false
+                    //Set isAutoCompleteBoxAdded to false
                     isAutoCompleteBoxAdded = false;
+                    //Clear autoString
+                    autoString = "";
+                    htmlString = "";
                 }
-                //set autoString to empty
-                //autoString = "";
             }
+
         }
         #endregion
         //*******************************
@@ -411,10 +470,16 @@ namespace LinedRichTextBox
             switch (e.KeyCode)
             {
                 case Keys.Back:
-                    if(autoString == "")
+                    //Check if the autoString is empty
+                    if(Text == "")
                     {
+                        //Clear the listBox
+                        AutoCompleteBox.Items.Clear();
+                        //Remove the control ListBox
                         Controls.Remove(AutoCompleteBox);
+                        //Set isAutoCompleteBoxAdded to false
                         isAutoCompleteBoxAdded = false;
+                        //Clear autoString
                         autoString = "";
                     }
                     break;
@@ -450,6 +515,8 @@ namespace LinedRichTextBox
                         {
                             if(AutoCompleteBox.SelectedIndex != -1)
                             {
+                                int insertSel = 0;
+
                                 //Remove the autoString from the RTB
                                 Text = Text.Remove(sel - autoString.Length, autoString.Length);
                                 //Set text to the selected item in the list
@@ -457,25 +524,24 @@ namespace LinedRichTextBox
                                 //Set htmlString to the selected item in the list
                                 htmlString = AutoCompleteBox.SelectedItem.ToString();
 
+                                insertSel = sel - autoString.Length;
                                 //Insert text to the RTB starting at selectionstart
-                                Text = Text.Insert(sel - autoString.Length, text);
+                                Text = Text.Insert(insertSel, text);
+
                                 //Set selection start to sel + the text.length
                                 SelectionStart = sel + text.Length - autoString.Length;
-                                //-----
-                                //--Not sure if autoString to empty should go here
-                                //-----
                             }
                         }
-                       
                     }
+                    
                     // Clear the AutoCompleteBox Items 
                     AutoCompleteBox.Items.Clear();
-
                     //remove control
                     Controls.Remove(AutoCompleteBox);
                     //set bool isAutoCompleteBoxAdded to false
                     isAutoCompleteBoxAdded = false;
-                    //Set autoString to empty
+
+                    //Clear the strings
                     autoString = "";
                     break;
                 #endregion
@@ -492,14 +558,21 @@ namespace LinedRichTextBox
                         //Check if AutoCompleteBox is not empty
                         if (AutoCompleteBox.Items.Count != 0)
                         {
-                            
+                            //Make sure that the selection is not -1
+                            if(AutoCompleteBox.SelectedIndex == -1)
+                            {
+                                AutoCompleteBox.SelectedIndex = 0;
+                            }
+
                             //Remove the autoString from the RTB
                             Text = Text.Remove(sel - autoString.Length, autoString.Length);
                             //Set text to the selected item in the list
                             text = AutoCompleteBox.SelectedItem.ToString();
+                            
                             //Set htmlString to the selected item in the list
                             htmlString = AutoCompleteBox.SelectedItem.ToString();
 
+                            
                             //Insert text to the RTB starting at selectionstart
                             Text = Text.Insert(sel - autoString.Length, text);
 
@@ -507,13 +580,11 @@ namespace LinedRichTextBox
 
                             //Set selection start to sel + the text.length
                             SelectionStart = sel + text.Length - autoString.Length;
-
                         }
                     }
                     // Clear the AutoCompleteBox Items 
                     AutoCompleteBox.Items.Clear();
-                    
-                    //Set autoString to empty
+                    //Clear the string
                     autoString = "";
                     break;
                 #endregion
@@ -531,6 +602,7 @@ namespace LinedRichTextBox
                         isAutoCompleteBoxAdded = false;
                     }
                     autoString = "";//Set autoString to empty
+                    htmlString = "";
                     break;
                 #endregion
 
@@ -547,6 +619,7 @@ namespace LinedRichTextBox
                         
                     }
                     autoString = "";//Set autoString to empty
+                    htmlString = "";
                     break;
                 #endregion
 
@@ -575,8 +648,10 @@ namespace LinedRichTextBox
                         //removing the last character
                         autoString = autoString.Substring(0, autoString.Length - 1);
                     }
+                    
                     if(htmlString != "")
                     {
+                      //Remove last character
                       htmlString = htmlString.Substring(0, htmlString.Length - 1);
                     }
                     
@@ -646,55 +721,7 @@ namespace LinedRichTextBox
         {
             base.OnKeyPress(e);
             //Create a string variable keyStroke and grab the key that was pressed
-            string keyStroke = e.KeyChar.ToString();
-
-            #region Special Character Handling
-            //  check pressed key on AutoCompleteBox is special character or not
-            //   if it is a special character then remove AutoCompleteBox from the RTB
-            switch (keyStroke.ToString())
-            {
-                case "~":
-                case "`":
-                case "!":
-                case "@":
-                case "#":
-                case "$":
-                case "%":
-                case "^":
-                case "&":
-                case "*":
-                case "-":
-                case "_":
-                case "+":
-                case "=":
-                case "(":
-                case ")":
-                case "[":
-                case "]":
-                case "{":
-                case "}":
-                case ":":
-                case ";":
-                case "\"":
-                case "'":
-                case "|":
-                case "\\":
-                case "<":
-                case ">":
-                case ",":
-                case ".":
-                case "/":
-                case "?":
-                    if (isAutoCompleteBoxAdded)
-                    {
-                        Controls.Remove(AutoCompleteBox);
-                        //set bool isAutoCompleteBoxAdded to false
-                        isAutoCompleteBoxAdded = false;
-                        autoString = "";
-                    }
-                    break;
-            }
-            #endregion
+            string keyStroke = e.KeyChar.ToString();//Holds the keystroke from the user
 
             #region AutoBrackets
             //Check if AutoBrackets feature is on
@@ -723,22 +750,12 @@ namespace LinedRichTextBox
                 Convert.ToInt32(e.KeyChar) != 9 || 
                 Convert.ToInt32(e.KeyChar) == 8)
             {
-                //Check to make sure it is a - Z and not any special character
-                //[^\w\.@-] matches any character that is not a word character, a period, an @ symbol, or a hyphen
-                keyStroke = Regex.Replace(keyStroke, @"[^\w\.@-]", "");
 
-                //Concat the key & autoString postfix
-                autoString += keyStroke;
-
-                //Check if autoString is not empty
-                if (autoString != "")
+                //Check if AutoComplete feature is on
+                if (Properties.Settings.Default.AutoComplete == true)
                 {
-                    //Check if AutoComplete feature is on
-                    if (Properties.Settings.Default.AutoComplete == true)
-                    {
-                        //Call AutoComplete to show the list box
-                        AutoComplete();
-                    }
+                    //Call AutoComplete to show the list box
+                    AutoComplete(keyStroke);
                 }
             }
             #endregion
@@ -753,6 +770,57 @@ namespace LinedRichTextBox
                 //set bool isAutoCompleteBoxAdded to false
                 isAutoCompleteBoxAdded = false;
             }
+
+            #region Special Character Handling
+            //  check pressed key if AutoCompleteBox is special character or not
+            //   if it is a special character then remove AutoCompleteBox from the RTB
+            switch (keyStroke.ToString())
+            {
+                case "~":
+                case "`":
+                case "!":
+                case "@":
+                case "#":
+                case "$":
+                case "%":
+                case "^":
+                case "&":
+                case "*":
+                //case "-":
+                case "_":
+                case "+":
+                case "=":
+                case "(":
+                case ")":
+                case "[":
+                case "]":
+                case "{":
+                case "}":
+                case ":":
+                case ";":
+                case "\"":
+                case "'":
+                case "|":
+                case "\\":
+                case "<":
+                case ">":
+                case ",":
+                case ".":
+                case "/":
+                case "?":
+                    //Check if the AutoCompleteBox has been added
+                    if (isAutoCompleteBoxAdded)
+                    {
+                        //Remove control
+                        Controls.Remove(AutoCompleteBox);
+                        //set bool isAutoCompleteBoxAdded to false
+                        isAutoCompleteBoxAdded = false;
+                        //Clear autoString
+                        autoString = "";
+                    }
+                    break;
+            }//End Switch
+            #endregion
         }
         #endregion
         //**************************************

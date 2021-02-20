@@ -42,10 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDERTBControl.cs">
+    <Compile Include="Class\CSSProperties.cs" />
+    <Compile Include="SyntaxControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HTMLTagList.cs" />
+    <Compile Include="Class\HTMLTagList.cs" />
     <Compile Include="LinedRichTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -58,7 +59,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="testClass.cs" />
+    <Compile Include="Class\SyntaxHighlight.cs" />
+    <Compile Include="TestClass.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
